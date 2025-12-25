@@ -1,13 +1,68 @@
 services:
-  ollama:
-    image: 'ollama/ollama:latest'
+  # Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: stock-manager-app
     ports:
-      - '11434'
-  postgres:
-    image: 'postgres:latest'
+      - "8080:8080"
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      - SPRING_PROFILES_ACTIVE=prod
+      - DATABASE_URL=jdbc:postgresql://postgres:5432/stockdb
+      - DATABASE_USERNAME=stockuser
+      - DATABASE_PASSWORD=stockpassword
+      - JWT_SECRET=MyProductionJWTSecretKeyThatShouldBeAtLeast256BitsLongForSecurity
+      - ENCRYPTION_KEY=ProductionAES256EncryptionKey!
+      - OLLAMA_URL=http://ollama:11434
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    networks:
+      - stock-network
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: stock-manager-db
+    environment:
+      POSTGRES_DB: stockdb
+      POSTGRES_USER: stockuser
+      POSTGRES_PASSWORD: stockpassword
     ports:
-      - '5432'
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stockuser -d stockdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - stock-network
+    restart: unless-stopped
+
+  # Ollama AI (for predictions)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: stock-manager-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - stock-network
+    restart: unless-stopped
+    # Pull the model on first run
+    # Run: docker exec stock-manager-ollama ollama pull llama3.2
+
+volumes:
+  postgres_data:
+  ollama_data:
+
+networks:
+  stock-network:
+    driver: bridge

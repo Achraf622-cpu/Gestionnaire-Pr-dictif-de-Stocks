@@ -68,3 +68,24 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Check Code Style
+        run: ./mvnw checkstyle:check -B
+        continue-on-error: true
+
+      - name: Run Static Analysis
+        run: ./mvnw pmd:check -B
+        continue-on-error: true

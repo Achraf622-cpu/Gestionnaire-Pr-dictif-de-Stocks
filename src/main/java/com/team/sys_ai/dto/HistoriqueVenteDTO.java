@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 
-
 @Data
 @Builder
 @NoArgsConstructor

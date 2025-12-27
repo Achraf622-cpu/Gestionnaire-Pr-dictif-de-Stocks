@@ -42,6 +42,7 @@ public class EntrepotController {
     public ResponseEntity<EntrepotDTO> getEntrepotWithStats(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
+
         if (!userDetails.getUser().hasAccessToEntrepot(id)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -61,5 +62,25 @@ public class EntrepotController {
         return ResponseEntity.status(HttpStatus.CREATED).body(entrepotService.createEntrepot(dto));
     }
 
+    @PutMapping("/admin/entrepots/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<EntrepotDTO> updateEntrepot(
+            @PathVariable Long id,
+            @Valid @RequestBody EntrepotDTO dto) {
+        return ResponseEntity.ok(entrepotService.updateEntrepot(id, dto));
+    }
 
+    @PatchMapping("/admin/entrepots/{id}/deactivate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<EntrepotDTO> deactivateEntrepot(@PathVariable Long id) {
+        return ResponseEntity.ok(entrepotService.deactivateEntrepot(id));
+    }
+
+
+    @DeleteMapping("/admin/entrepots/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteEntrepot(@PathVariable Long id) {
+        entrepotService.deleteEntrepot(id);
+        return ResponseEntity.noContent().build();
+    }
 }

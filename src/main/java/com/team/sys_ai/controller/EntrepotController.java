@@ -48,5 +48,18 @@ public class EntrepotController {
         return ResponseEntity.ok(entrepotService.getEntrepotWithStats(id));
     }
 
+    @GetMapping("/admin/entrepots")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<EntrepotDTO>> getAllEntrepots() {
+        return ResponseEntity.ok(entrepotService.getAllEntrepots());
+    }
+
+
+    @PostMapping("/admin/entrepots")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<EntrepotDTO> createEntrepot(@Valid @RequestBody EntrepotDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(entrepotService.createEntrepot(dto));
+    }
+
 
 }

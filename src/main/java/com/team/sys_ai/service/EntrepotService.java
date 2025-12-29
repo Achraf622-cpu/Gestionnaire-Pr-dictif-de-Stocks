@@ -35,5 +35,12 @@ public class EntrepotService {
         return entrepotMapper.toDTOList(entrepotRepository.findAll());
     }
 
+    /**
+     * Get active warehouses.
+     */
+    public List<EntrepotDTO> getActiveEntrepots() {
+        return entrepotMapper.toDTOList(entrepotRepository.findByActifTrue());
+    }
+
 
 }

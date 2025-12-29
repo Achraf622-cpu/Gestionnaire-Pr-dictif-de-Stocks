@@ -42,5 +42,20 @@ public class EntrepotService {
         return entrepotMapper.toDTOList(entrepotRepository.findByActifTrue());
     }
 
+    /**
+     * Get warehouses accessible by user (role-based).
+     */
+    public List<EntrepotDTO> getAccessibleEntrepots(User user) {
+        if (user.isAdmin()) {
+            return getActiveEntrepots();
+        } else {
+            // GESTIONNAIRE can only see their assigned warehouse
+            if (user.getEntrepotAssigne() == null) {
+                return List.of();
+            }
+            return List.of(entrepotMapper.toDTO(user.getEntrepotAssigne()));
+        }
+    }
+
 
 }

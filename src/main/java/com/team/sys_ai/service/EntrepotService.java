@@ -57,5 +57,12 @@ public class EntrepotService {
         }
     }
 
+    /**
+     * Find entrepot by ID or throw exception.
+     */
+    private Entrepot findById(Long id) {
+        return entrepotRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Entrepôt", "id", id));
+    }
 
 }

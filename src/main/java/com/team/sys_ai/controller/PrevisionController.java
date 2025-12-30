@@ -75,5 +75,14 @@ public class PrevisionController {
             .body(previsionService.generatePrevision(entrepotId, produitId, userDetails.getUser()));
     }
 
-
+    /**
+     * Generate predictions for all products in a warehouse.
+     */
+    @PostMapping("/entrepot/{entrepotId}/generate-all")
+    public ResponseEntity<List<PrevisionDTO>> generatePrevisionsForEntrepot(
+            @PathVariable Long entrepotId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(previsionService.generatePrevisionsForEntrepot(entrepotId, userDetails.getUser()));
+    }
 }

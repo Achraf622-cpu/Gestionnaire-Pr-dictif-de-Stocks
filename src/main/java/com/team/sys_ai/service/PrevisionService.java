@@ -89,5 +89,69 @@ public class    PrevisionService {
                 .map(p -> enrichPrevision(p, entrepotId));
     }
 
+    /**
+     * Generate prediction for a product in a warehouse.
+     */
+    @Transactional
+    public PrevisionDTO generatePrevision(Long entrepotId, Long produitId, User user) {
+        validateAccess(entrepotId, user);
+
+        Entrepot entrepot = entrepotRepository.findById(entrepotId)
+                .orElseThrow(() -> new ResourceNotFoundException("Entrepôt", "id", entrepotId));
+
+        Produit produit = produitRepository.findById(produitId)
+                .orElseThrow(() -> new ResourceNotFoundException("Produit", "id", produitId));
+
+        // Get historical data
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
+        LocalDate ninetyDaysAgo = LocalDate.now().minusDays(90);
+
+        Integer totalSold30Days = historiqueVenteRepository.getTotalQuantitySold(
+                produitId, entrepotId, thirtyDaysAgo, LocalDate.now());
+
+        Double avgDailySales = historiqueVenteRepository.getAverageDailySales(
+                produitId, entrepotId, ninetyDaysAgo);
+
+        Long salesRecordCount = historiqueVenteRepository.countSalesRecords(
+                produitId, entrepotId, ninetyDaysAgo);
+
+        // Get current stock
+        Integer currentStock = stockRepository.findByEntrepotIdAndProduitId(entrepotId, produitId)
+                .map(Stock::getQuantiteDisponible)
+                .orElse(0);
+
+        Integer seuilAlerte = stockRepository.findByEntrepotIdAndProduitId(entrepotId, produitId)
+                .map(Stock::getSeuilAlerte)
+                .orElse(10);
+
+        // Calculate prediction
+        int predictedSales30Days = calculatePredictedSales(avgDailySales, totalSold30Days);
+        double confidence = calculateConfidence(salesRecordCount);
+        Prevision.NiveauRisque riskLevel = calculateRiskLevel(currentStock, predictedSales30Days, seuilAlerte);
+        String recommendation = generateRecommendation(
+                produit.getNom(), currentStock, predictedSales30Days, seuilAlerte, riskLevel);
+        Integer quantiteRecommandee = calculateRecommendedQuantity(
+                currentStock, predictedSales30Days, seuilAlerte);
+
+        // Create prediction
+        Prevision prevision = Prevision.builder()
+                .produit(produit)
+                .entrepot(entrepot)
+                .datePrevision(LocalDate.now())
+                .quantitePrevue30Jours(predictedSales30Days)
+                .niveauConfiance(confidence)
+                .niveauRisque(riskLevel)
+                .recommandation(recommendation)
+                .quantiteRecommandee(quantiteRecommandee)
+                .build();
+
+        prevision = previsionRepository.save(prevision);
+
+        PrevisionDTO dto = previsionMapper.toDTO(prevision);
+        dto.setStockActuel(currentStock);
+        dto.setSeuilAlerte(seuilAlerte);
+        return dto;
+    }
+
 
 }

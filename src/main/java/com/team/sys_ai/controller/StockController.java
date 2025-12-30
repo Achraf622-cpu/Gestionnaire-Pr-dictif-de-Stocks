@@ -67,5 +67,19 @@ public class StockController {
         return ResponseEntity.ok(stockService.getStock(entrepotId, produitId, userDetails.getUser()));
     }
 
+    /**
+     * Create or update stock.
+     */
+    @PutMapping("/entrepot/{entrepotId}/produit/{produitId}")
+    public ResponseEntity<StockDTO> upsertStock(
+            @PathVariable Long entrepotId,
+            @PathVariable Long produitId,
+            @RequestParam Integer quantite,
+            @RequestParam(required = false) Integer seuilAlerte,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(
+                stockService.upsertStock(entrepotId, produitId, quantite, seuilAlerte, userDetails.getUser()));
+    }
+
 
 }

@@ -143,6 +143,13 @@ public class HistoriqueVenteService {
         return historiqueVenteRepository.getMonthlySales(produitId, entrepotId);
     }
 
+    /**
+     * Get top selling products.
+     */
+    public List<Object[]> getTopSellingProducts(Long entrepotId, int daysBack, int limit) {
+        LocalDate since = LocalDate.now().minusDays(daysBack);
+        return historiqueVenteRepository.getTopSellingProducts(entrepotId, since, PageRequest.of(0, limit));
+    }
 
 
 }

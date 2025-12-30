@@ -37,5 +37,14 @@ public class ProduitController {
         return ResponseEntity.ok(produitService.getAllCategories());
     }
 
+    /**
+     * Get products by category.
+     */
+    @GetMapping("/produits/categorie/{categorie}")
+    public ResponseEntity<List<ProduitDTO>> getProduitsByCategorie(@PathVariable String categorie) {
+        return ResponseEntity.ok(produitService.getProduitsByCategorie(categorie));
+    }
+
+
 
 }

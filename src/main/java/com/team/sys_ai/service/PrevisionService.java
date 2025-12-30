@@ -54,4 +54,14 @@ public class    PrevisionService {
     }
 
 
+    /**
+     * Get predictions for a warehouse.
+     */
+    public List<PrevisionDTO> getPrevisionsByEntrepot(Long entrepotId, User user) {
+        validateAccess(entrepotId, user);
+        List<Prevision> previsions = previsionRepository.findByEntrepotId(entrepotId);
+        return enrichPrevisions(previsions, entrepotId);
+    }
+
+
 }

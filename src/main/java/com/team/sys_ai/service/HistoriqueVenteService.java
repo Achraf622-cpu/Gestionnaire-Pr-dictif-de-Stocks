@@ -46,5 +46,14 @@ public class HistoriqueVenteService {
         }
     }
 
+    /**
+     * Get sales history for a warehouse.
+     */
+    public List<HistoriqueVenteDTO> getHistoriqueByEntrepot(Long entrepotId, User user) {
+        validateAccess(entrepotId, user);
+        return historiqueVenteMapper.toDTOList(historiqueVenteRepository.findByEntrepotId(entrepotId));
+    }
+
+
 
 }

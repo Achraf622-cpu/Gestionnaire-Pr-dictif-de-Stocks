@@ -48,5 +48,14 @@ public class StockController {
         return ResponseEntity.ok(stockService.getCriticalStocks(entrepotId, userDetails.getUser()));
     }
 
+    /**
+     * Get all stocks at alert level (ADMIN only).
+     */
+    @GetMapping("/alerts/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<StockDTO>> getAllStocksAtAlert() {
+        return ResponseEntity.ok(stockService.getAllStocksAtAlert());
+    }
+
 
 }

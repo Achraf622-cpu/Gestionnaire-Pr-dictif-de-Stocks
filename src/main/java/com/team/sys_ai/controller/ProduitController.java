@@ -45,6 +45,14 @@ public class ProduitController {
         return ResponseEntity.ok(produitService.getProduitsByCategorie(categorie));
     }
 
+    /**
+     * Search products by name.
+     */
+    @GetMapping("/produits/search")
+    public ResponseEntity<List<ProduitDTO>> searchProduits(@RequestParam String nom) {
+        return ResponseEntity.ok(produitService.searchProduits(nom));
+    }
+
 
 
 }

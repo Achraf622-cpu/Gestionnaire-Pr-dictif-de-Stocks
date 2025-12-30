@@ -29,5 +29,13 @@ public class ProduitController {
         return ResponseEntity.ok(produitService.getAllProduits());
     }
 
+    /**
+     * Get all categories.
+     */
+    @GetMapping("/produits/categories")
+    public ResponseEntity<List<String>> getAllCategories() {
+        return ResponseEntity.ok(produitService.getAllCategories());
+    }
+
 
 }

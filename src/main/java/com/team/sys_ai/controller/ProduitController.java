@@ -83,6 +83,15 @@ public class ProduitController {
         return ResponseEntity.ok(produitService.getProduitByIdForAdmin(id));
     }
 
+    /**
+     * Create new product (ADMIN only).
+     */
+    @PostMapping("/admin/produits")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProduitAdminDTO> createProduit(@Valid @RequestBody ProduitAdminDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(produitService.createProduit(dto));
+    }
+
 
 
 }

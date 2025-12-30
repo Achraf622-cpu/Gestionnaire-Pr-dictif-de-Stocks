@@ -54,6 +54,17 @@ public class HistoriqueVenteService {
         return historiqueVenteMapper.toDTOList(historiqueVenteRepository.findByEntrepotId(entrepotId));
     }
 
+    /**
+     * Get sales history between dates for a warehouse.
+     */
+    public List<HistoriqueVenteDTO> getHistoriqueByEntrepotAndDateRange(
+            Long entrepotId, LocalDate startDate, LocalDate endDate, User user) {
+        validateAccess(entrepotId, user);
+        return historiqueVenteMapper.toDTOList(
+                historiqueVenteRepository.findByEntrepotIdAndDateVenteBetween(entrepotId, startDate, endDate));
+    }
+
+
 
 
 }

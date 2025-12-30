@@ -233,6 +233,30 @@ public class    PrevisionService {
         return generateFallbackRecommendation(currentStock, predictedSales, threshold, riskLevel);
     }
 
+    /**
+     * Generate recommendation using AI.
+     */
+    private String generateAIRecommendation(String productName, Integer currentStock,
+                                            int predictedSales, Integer threshold,
+                                            Prevision.NiveauRisque riskLevel) {
+        ChatClient chatClient = chatClientBuilder.get().build();
+
+        String prompt = String.format(
+                "En tant qu'expert en gestion des stocks, générez une recommandation courte (max 100 mots) pour:\n" +
+                        "- Produit: %s\n" +
+                        "- Stock actuel: %d unités\n" +
+                        "- Ventes prévues 30 jours: %d unités\n" +
+                        "- Seuil d'alerte: %d unités\n" +
+                        "- Niveau de risque: %s\n" +
+                        "Format: Une phrase d'action claire et concise.",
+                productName, currentStock, predictedSales, threshold, riskLevel.getLabel()
+        );
+
+        return chatClient.prompt()
+                .user(prompt)
+                .call()
+                .content();
+    }
 
 
 }

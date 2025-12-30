@@ -102,8 +102,13 @@ public class ProduitController {
             @Valid @RequestBody ProduitAdminDTO dto) {
         return ResponseEntity.ok(produitService.updateProduit(id, dto));
     }
-
-
-
+    /**
+     * Deactivate product (ADMIN only).
+     */
+    @PatchMapping("/admin/produits/{id}/deactivate")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProduitAdminDTO> deactivateProduit(@PathVariable Long id) {
+        return ResponseEntity.ok(produitService.deactivateProduit(id));
+    }
 
 }

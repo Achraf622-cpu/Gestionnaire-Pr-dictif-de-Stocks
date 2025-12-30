@@ -71,5 +71,18 @@ class JwtUtilTest {
         assertThat(role).isEqualTo("ADMIN");
     }
 
+    @Test
+    @DisplayName("Should validate token against user details")
+    void validateToken_ValidTokenAndUser_ReturnsTrue() {
+        // Given
+        String token = jwtUtil.generateToken(userDetails);
+
+        // When
+        Boolean isValid = jwtUtil.validateToken(token, userDetails);
+
+        // Then
+        assertThat(isValid).isTrue();
+    }
+
 
 }

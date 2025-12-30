@@ -83,5 +83,20 @@ public class EntrepotService {
         return getEntrepotById(id);
     }
 
+    /**
+     * Create new entrepot (ADMIN only).
+     */
+    @Transactional
+    public EntrepotDTO createEntrepot(EntrepotDTO dto) {
+        // Check for duplicate name
+        if (entrepotRepository.existsByNomIgnoreCase(dto.getNom())) {
+            throw new BusinessValidationException("nom", "Un entrepôt avec ce nom existe déjà");
+        }
+
+        Entrepot entrepot = entrepotMapper.toEntity(dto);
+        entrepot.setActif(true);
+        entrepot = entrepotRepository.save(entrepot);
+        return entrepotMapper.toDTO(entrepot);
+    }
 
 }

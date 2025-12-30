@@ -44,6 +44,14 @@ public class    PrevisionService {
         }
     }
 
+    /**
+     * Enrich list of predictions.
+     */
+    private List<PrevisionDTO> enrichPrevisions(List<Prevision> previsions, Long entrepotId) {
+        return previsions.stream()
+                .map(p -> enrichPrevision(p, entrepotId))
+                .toList();
+    }
 
 
 }

@@ -179,4 +179,20 @@ public class    PrevisionService {
     }
 
 
+    /**
+     * Calculate confidence level based on data availability.
+     */
+    private double calculateConfidence(Long salesRecordCount) {
+        if (salesRecordCount == null || salesRecordCount == 0) {
+            return 30.0; // Low confidence with no data
+        } else if (salesRecordCount < 10) {
+            return 50.0 + (salesRecordCount * 2);
+        } else if (salesRecordCount < 30) {
+            return 70.0 + (salesRecordCount - 10);
+        } else {
+            return Math.min(95.0, 85.0 + (salesRecordCount - 30) * 0.1);
+        }
+    }
+
+
 }

@@ -139,5 +139,16 @@ public class EntrepotService {
         entrepotRepository.delete(entrepot);
     }
 
+    /**
+     * Deactivate entrepot (soft delete).
+     */
+    @Transactional
+    public EntrepotDTO deactivateEntrepot(Long id) {
+        Entrepot entrepot = findById(id);
+        entrepot.setActif(false);
+        entrepot = entrepotRepository.save(entrepot);
+        return entrepotMapper.toDTO(entrepot);
+    }
+
 
 }

@@ -45,5 +45,17 @@ class JwtUtilTest {
         assertThat(token.split("\\.")).hasSize(3); // JWT has 3 parts
     }
 
+    @Test
+    @DisplayName("Should extract username from token")
+    void extractUsername_ValidToken_ReturnsUsername() {
+        // Given
+        String token = jwtUtil.generateToken(userDetails);
+
+        // When
+        String username = jwtUtil.extractUsername(token);
+
+        // Then
+        assertThat(username).isEqualTo("testuser");
+    }
 
 }

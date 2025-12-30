@@ -65,4 +65,13 @@ public class EntrepotService {
                 .orElseThrow(() -> new ResourceNotFoundException("Entrepôt", "id", id));
     }
 
+    /**
+     * Get entrepot by ID.
+     */
+    public EntrepotDTO getEntrepotById(Long id) {
+        Entrepot entrepot = findById(id);
+        return entrepotMapper.toDTO(entrepot);
+    }
+
+
 }

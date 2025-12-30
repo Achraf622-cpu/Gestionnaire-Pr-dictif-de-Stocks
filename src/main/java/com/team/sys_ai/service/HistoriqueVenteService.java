@@ -74,6 +74,15 @@ public class HistoriqueVenteService {
                 historiqueVenteRepository.findByProduitIdAndEntrepotId(produitId, entrepotId));
     }
 
+    /**
+     * Record a sale (and update stock).
+     */
+    @Transactional
+    public HistoriqueVenteDTO recordSale(Long entrepotId, Long produitId, Integer quantite, User user) {
+        return recordSale(entrepotId, produitId, quantite, LocalDate.now(), user);
+    }
+
+
 
 
 }

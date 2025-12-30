@@ -153,5 +153,19 @@ public class    PrevisionService {
         return dto;
     }
 
+    /**
+     * Generate predictions for all products in a warehouse.
+     */
+    @Transactional
+    public List<PrevisionDTO> generatePrevisionsForEntrepot(Long entrepotId, User user) {
+        validateAccess(entrepotId, user);
+
+        List<Stock> stocks = stockRepository.findByEntrepotId(entrepotId);
+        return stocks.stream()
+                .map(stock -> generatePrevision(entrepotId, stock.getProduit().getId(), user))
+                .toList();
+    }
+
+
 
 }

@@ -278,4 +278,18 @@ public class    PrevisionService {
         };
     }
 
+
+    /**
+     * Calculate recommended order quantity.
+     */
+    private Integer calculateRecommendedQuantity(Integer currentStock, int predictedSales, Integer threshold) {
+        if (currentStock >= predictedSales + threshold) {
+            return 0; // No order needed
+        }
+        // Order enough for 45 days + safety margin
+        int targetStock = (int)(predictedSales * 1.5) + threshold;
+        return Math.max(0, targetStock - currentStock);
+    }
+
+
 }

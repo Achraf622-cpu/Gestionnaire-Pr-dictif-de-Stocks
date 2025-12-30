@@ -107,6 +107,19 @@ public class StockController {
                 stockService.removeQuantity(entrepotId, produitId, quantite, userDetails.getUser()));
     }
 
+    /**
+     * Update alert threshold.
+     */
+    @PatchMapping("/entrepot/{entrepotId}/produit/{produitId}/seuil")
+    public ResponseEntity<StockDTO> updateSeuilAlerte(
+            @PathVariable Long entrepotId,
+            @PathVariable Long produitId,
+            @RequestParam Integer seuilAlerte,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(
+                stockService.updateSeuilAlerte(entrepotId, produitId, seuilAlerte, userDetails.getUser()));
+    }
+
 
 
 }

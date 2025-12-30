@@ -94,6 +94,19 @@ public class StockController {
                 stockService.addQuantity(entrepotId, produitId, quantite, userDetails.getUser()));
     }
 
+    /**
+     * Remove quantity from stock.
+     */
+    @PatchMapping("/entrepot/{entrepotId}/produit/{produitId}/remove")
+    public ResponseEntity<StockDTO> removeQuantity(
+            @PathVariable Long entrepotId,
+            @PathVariable Long produitId,
+            @RequestParam Integer quantite,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(
+                stockService.removeQuantity(entrepotId, produitId, quantite, userDetails.getUser()));
+    }
+
 
 
 }

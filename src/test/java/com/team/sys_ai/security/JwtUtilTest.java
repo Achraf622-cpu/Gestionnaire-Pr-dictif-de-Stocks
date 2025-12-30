@@ -33,5 +33,17 @@ class JwtUtilTest {
         );
     }
 
+    @Test
+    @DisplayName("Should generate valid JWT token")
+    void generateToken_ValidUser_ReturnsToken() {
+        // When
+        String token = jwtUtil.generateToken(userDetails);
+
+        // Then
+        assertThat(token).isNotNull();
+        assertThat(token).isNotEmpty();
+        assertThat(token.split("\\.")).hasSize(3); // JWT has 3 parts
+    }
+
 
 }

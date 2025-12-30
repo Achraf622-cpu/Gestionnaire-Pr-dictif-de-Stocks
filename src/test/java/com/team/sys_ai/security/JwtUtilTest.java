@@ -84,5 +84,23 @@ class JwtUtilTest {
         assertThat(isValid).isTrue();
     }
 
+    @Test
+    @DisplayName("Should return false for token with wrong username")
+    void validateToken_WrongUsername_ReturnsFalse() {
+        // Given
+        String token = jwtUtil.generateToken(userDetails);
+        UserDetails otherUser = new User(
+            "otheruser",
+            "password",
+            Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN"))
+        );
+
+        // When
+        Boolean isValid = jwtUtil.validateToken(token, otherUser);
+
+        // Then
+        assertThat(isValid).isFalse();
+    }
+
 
 }

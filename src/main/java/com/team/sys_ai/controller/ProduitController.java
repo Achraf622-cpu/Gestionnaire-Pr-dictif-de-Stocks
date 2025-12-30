@@ -63,6 +63,16 @@ public class ProduitController {
         return ResponseEntity.ok(produitService.getProduitById(id, userDetails.getUser()));
     }
 
+    // ===== ADMIN ONLY ENDPOINTS =====
+
+    /**
+     * Get all products with sensitive data (ADMIN only).
+     */
+    @GetMapping("/admin/produits")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ProduitAdminDTO>> getAllProduitsForAdmin() {
+        return ResponseEntity.ok(produitService.getAllProduitsForAdmin());
+    }
 
 
 }

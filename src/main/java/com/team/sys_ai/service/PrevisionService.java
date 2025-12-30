@@ -63,5 +63,14 @@ public class    PrevisionService {
         return enrichPrevisions(previsions, entrepotId);
     }
 
+    /**
+     * Get high-risk predictions for a warehouse.
+     */
+    public List<PrevisionDTO> getHighRiskPrevisions(Long entrepotId, User user) {
+        validateAccess(entrepotId, user);
+        List<Prevision> previsions = previsionRepository.findHighRiskPredictions(entrepotId);
+        return enrichPrevisions(previsions, entrepotId);
+    }
+
 
 }

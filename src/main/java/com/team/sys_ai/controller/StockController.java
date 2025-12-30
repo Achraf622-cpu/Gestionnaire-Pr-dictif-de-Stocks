@@ -38,5 +38,15 @@ public class StockController {
         return ResponseEntity.ok(stockService.getStocksAtAlert(entrepotId, userDetails.getUser()));
     }
 
+    /**
+     * Get critical stocks for a warehouse.
+     */
+    @GetMapping("/entrepot/{entrepotId}/critical")
+    public ResponseEntity<List<StockDTO>> getCriticalStocks(
+            @PathVariable Long entrepotId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(stockService.getCriticalStocks(entrepotId, userDetails.getUser()));
+    }
+
 
 }

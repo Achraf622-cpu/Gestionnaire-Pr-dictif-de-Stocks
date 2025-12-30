@@ -24,7 +24,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class    PrevisionService {
+public class PrevisionService {
 
     private final PrevisionRepository previsionRepository;
     private final StockRepository stockRepository;
@@ -33,7 +33,6 @@ public class    PrevisionService {
     private final EntrepotRepository entrepotRepository;
     private final PrevisionMapper previsionMapper;
     private final Optional<ChatClient.Builder> chatClientBuilder;
-
 
     /**
      * Validate user has access to warehouse.
@@ -52,7 +51,6 @@ public class    PrevisionService {
                 .map(p -> enrichPrevision(p, entrepotId))
                 .toList();
     }
-
 
     /**
      * Get predictions for a warehouse.
@@ -127,7 +125,7 @@ public class    PrevisionService {
         // Calculate prediction
         int predictedSales30Days = calculatePredictedSales(avgDailySales, totalSold30Days);
         double confidence = calculateConfidence(salesRecordCount);
-        Prevision.NiveauRisque riskLevel = calculateRiskLevel(currentStock, predictedSales30Days, seuilAlerte);
+        NiveauRisque riskLevel = calculateRiskLevel(currentStock, predictedSales30Days, seuilAlerte);
         String recommendation = generateRecommendation(
                 produit.getNom(), currentStock, predictedSales30Days, seuilAlerte, riskLevel);
         Integer quantiteRecommandee = calculateRecommendedQuantity(
@@ -178,7 +176,6 @@ public class    PrevisionService {
         return (int) Math.ceil(predicted);
     }
 
-
     /**
      * Calculate confidence level based on data availability.
      */
@@ -193,24 +190,25 @@ public class    PrevisionService {
             return Math.min(95.0, 85.0 + (salesRecordCount - 30) * 0.1);
         }
     }
+
     /**
      * Calculate risk level.
      */
-    private Prevision.NiveauRisque calculateRiskLevel(Integer currentStock, int predictedSales, Integer threshold) {
+    private NiveauRisque calculateRiskLevel(Integer currentStock, int predictedSales, Integer threshold) {
         if (currentStock == null || currentStock == 0) {
-            return Prevision.NiveauRisque.CRITIQUE;
+            return NiveauRisque.CRITIQUE;
         }
 
         double daysOfStock = predictedSales > 0 ? (currentStock * 30.0) / predictedSales : 999;
 
         if (daysOfStock <= 7) {
-            return Prevision.NiveauRisque.CRITIQUE;
+            return NiveauRisque.CRITIQUE;
         } else if (daysOfStock <= 15) {
-            return Prevision.NiveauRisque.ELEVE;
+            return NiveauRisque.ELEVE;
         } else if (currentStock <= threshold * 1.5) {
-            return Prevision.NiveauRisque.MOYEN;
+            return NiveauRisque.MOYEN;
         } else {
-            return Prevision.NiveauRisque.FAIBLE;
+            return NiveauRisque.FAIBLE;
         }
     }
 
@@ -218,8 +216,8 @@ public class    PrevisionService {
      * Generate recommendation text.
      */
     private String generateRecommendation(String productName, Integer currentStock,
-                                          int predictedSales, Integer threshold,
-                                          Prevision.NiveauRisque riskLevel) {
+            int predictedSales, Integer threshold,
+            NiveauRisque riskLevel) {
         // Try to use AI if available
         if (chatClientBuilder.isPresent()) {
             try {
@@ -237,8 +235,8 @@ public class    PrevisionService {
      * Generate recommendation using AI.
      */
     private String generateAIRecommendation(String productName, Integer currentStock,
-                                            int predictedSales, Integer threshold,
-                                            Prevision.NiveauRisque riskLevel) {
+            int predictedSales, Integer threshold,
+            NiveauRisque riskLevel) {
         ChatClient chatClient = chatClientBuilder.get().build();
 
         String prompt = String.format(
@@ -249,8 +247,7 @@ public class    PrevisionService {
                         "- Seuil d'alerte: %d unités\n" +
                         "- Niveau de risque: %s\n" +
                         "Format: Une phrase d'action claire et concise.",
-                productName, currentStock, predictedSales, threshold, riskLevel.getLabel()
-        );
+                productName, currentStock, predictedSales, threshold, riskLevel.getLabel());
 
         return chatClient.prompt()
                 .user(prompt)
@@ -258,12 +255,11 @@ public class    PrevisionService {
                 .content();
     }
 
-
     /**
      * Generate fallback recommendation without AI.
      */
     private String generateFallbackRecommendation(Integer currentStock, int predictedSales,
-                                                  Integer threshold, Prevision.NiveauRisque riskLevel) {
+            Integer threshold, NiveauRisque riskLevel) {
         return switch (riskLevel) {
             case CRITIQUE -> String.format(
                     "URGENT: Commander immédiatement. Stock critique (%d) insuffisant pour couvrir les ventes prévues (%d)",
@@ -273,11 +269,10 @@ public class    PrevisionService {
                     Math.max(predictedSales - currentStock + threshold, threshold));
             case MOYEN -> String.format(
                     "Planifier un réapprovisionnement de %d unités dans les 15 prochains jours",
-                    Math.max(threshold, (int)(predictedSales * 0.5)));
+                    Math.max(threshold, (int) (predictedSales * 0.5)));
             case FAIBLE -> "Stock suffisant. Aucune action immédiate requise.";
         };
     }
-
 
     /**
      * Calculate recommended order quantity.
@@ -287,7 +282,7 @@ public class    PrevisionService {
             return 0; // No order needed
         }
         // Order enough for 45 days + safety margin
-        int targetStock = (int)(predictedSales * 1.5) + threshold;
+        int targetStock = (int) (predictedSales * 1.5) + threshold;
         return Math.max(0, targetStock - currentStock);
     }
 

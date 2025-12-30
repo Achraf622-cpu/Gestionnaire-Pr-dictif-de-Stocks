@@ -1,6 +1,6 @@
 package com.team.sys_ai.dto;
 
-import com.team.sys_ai.entity.Prevision.NiveauRisque;
+import com.team.sys_ai.entity.NiveauRisque;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 
 @Data
 @Builder

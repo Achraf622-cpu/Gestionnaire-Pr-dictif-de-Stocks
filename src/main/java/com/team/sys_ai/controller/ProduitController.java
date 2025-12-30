@@ -111,4 +111,14 @@ public class ProduitController {
         return ResponseEntity.ok(produitService.deactivateProduit(id));
     }
 
+    /**
+     * Delete product (ADMIN only).
+     */
+    @DeleteMapping("/admin/produits/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteProduit(@PathVariable Long id) {
+        produitService.deleteProduit(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

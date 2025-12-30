@@ -214,6 +214,25 @@ public class    PrevisionService {
         }
     }
 
+    /**
+     * Generate recommendation text.
+     */
+    private String generateRecommendation(String productName, Integer currentStock,
+                                          int predictedSales, Integer threshold,
+                                          Prevision.NiveauRisque riskLevel) {
+        // Try to use AI if available
+        if (chatClientBuilder.isPresent()) {
+            try {
+                return generateAIRecommendation(productName, currentStock, predictedSales, threshold, riskLevel);
+            } catch (Exception e) {
+                log.warn("AI recommendation failed, using fallback: {}", e.getMessage());
+            }
+        }
+
+        // Fallback to rule-based recommendation
+        return generateFallbackRecommendation(currentStock, predictedSales, threshold, riskLevel);
+    }
+
 
 
 }

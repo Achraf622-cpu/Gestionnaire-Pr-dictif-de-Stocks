@@ -120,6 +120,13 @@ public class StockController {
                 stockService.updateSeuilAlerte(entrepotId, produitId, seuilAlerte, userDetails.getUser()));
     }
 
-
+    /**
+     * Get total stock for a product across all warehouses (ADMIN only).
+     */
+    @GetMapping("/produit/{produitId}/total")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Integer> getTotalQuantity(@PathVariable Long produitId) {
+        return ResponseEntity.ok(stockService.getTotalQuantity(produitId));
+    }
 
 }

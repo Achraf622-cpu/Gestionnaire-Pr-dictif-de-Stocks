@@ -291,5 +291,16 @@ public class    PrevisionService {
         return Math.max(0, targetStock - currentStock);
     }
 
-
+    /**
+     * Enrich prediction with current stock info.
+     */
+    private PrevisionDTO enrichPrevision(Prevision prevision, Long entrepotId) {
+        PrevisionDTO dto = previsionMapper.toDTO(prevision);
+        stockRepository.findByEntrepotIdAndProduitId(entrepotId, prevision.getProduit().getId())
+                .ifPresent(stock -> {
+                    dto.setStockActuel(stock.getQuantiteDisponible());
+                    dto.setSeuilAlerte(stock.getSeuilAlerte());
+                });
+        return dto;
+    }
 }

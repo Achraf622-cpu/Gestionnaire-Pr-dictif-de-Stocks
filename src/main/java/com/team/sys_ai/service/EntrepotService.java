@@ -99,4 +99,24 @@ public class EntrepotService {
         return entrepotMapper.toDTO(entrepot);
     }
 
+
+    /**
+     * Update entrepot (ADMIN only).
+     */
+    @Transactional
+    public EntrepotDTO updateEntrepot(Long id, EntrepotDTO dto) {
+        Entrepot entrepot = findById(id);
+
+        // Check for duplicate name (excluding current)
+        entrepotRepository.findByNomIgnoreCase(dto.getNom())
+                .filter(e -> !e.getId().equals(id))
+                .ifPresent(e -> {
+                    throw new BusinessValidationException("nom", "Un entrepôt avec ce nom existe déjà");
+                });
+
+        entrepotMapper.updateEntity(dto, entrepot);
+        entrepot = entrepotRepository.save(entrepot);
+        return entrepotMapper.toDTO(entrepot);
+    }
+
 }

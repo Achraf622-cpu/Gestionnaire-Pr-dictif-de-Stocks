@@ -81,8 +81,38 @@ public class HistoriqueVenteService {
     public HistoriqueVenteDTO recordSale(Long entrepotId, Long produitId, Integer quantite, User user) {
         return recordSale(entrepotId, produitId, quantite, LocalDate.now(), user);
     }
+    /**
+     * Record a sale with specific date.
+     */
+    @Transactional
+    public HistoriqueVenteDTO recordSale(Long entrepotId, Long produitId, Integer quantite,
+                                         LocalDate dateVente, User user) {
+        validateAccess(entrepotId, user);
 
+        if (quantite <= 0) {
+            throw new BusinessValidationException("quantite", "La quantité vendue doit être positive");
+        }
 
+        Entrepot entrepot = entrepotRepository.findById(entrepotId)
+                .orElseThrow(() -> new ResourceNotFoundException("Entrepôt", "id", entrepotId));
+
+        Produit produit = produitRepository.findById(produitId)
+                .orElseThrow(() -> new ResourceNotFoundException("Produit", "id", produitId));
+
+        // Update stock (will throw if insufficient)
+        stockService.removeQuantity(entrepotId, produitId, quantite, user);
+
+        // Create sale record
+        HistoriqueVente vente = HistoriqueVente.builder()
+                .entrepot(entrepot)
+                .produit(produit)
+                .quantiteVendue(quantite)
+                .dateVente(dateVente)
+                .build();
+
+        vente = historiqueVenteRepository.save(vente);
+        return historiqueVenteMapper.toDTO(vente);
+    }
 
 
 }

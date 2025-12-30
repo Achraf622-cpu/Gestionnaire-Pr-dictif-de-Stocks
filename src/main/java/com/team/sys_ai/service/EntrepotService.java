@@ -119,4 +119,25 @@ public class EntrepotService {
         return entrepotMapper.toDTO(entrepot);
     }
 
+    /**
+     * Delete entrepot (ADMIN only).
+     */
+    @Transactional
+    public void deleteEntrepot(Long id) {
+        Entrepot entrepot = findById(id);
+
+        // Check if warehouse has stocks
+        if (!entrepot.getStocks().isEmpty()) {
+            throw new BusinessValidationException("Impossible de supprimer un entrepôt avec des stocks");
+        }
+
+        // Check if warehouse has assigned users
+        if (!entrepot.getGestionnaires().isEmpty()) {
+            throw new BusinessValidationException("Impossible de supprimer un entrepôt avec des gestionnaires assignés");
+        }
+
+        entrepotRepository.delete(entrepot);
+    }
+
+
 }

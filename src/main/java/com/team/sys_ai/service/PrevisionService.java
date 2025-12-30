@@ -80,5 +80,14 @@ public class    PrevisionService {
         return previsionMapper.toDTOList(previsions);
     }
 
+    /**
+     * Get latest prediction for a product in a warehouse.
+     */
+    public Optional<PrevisionDTO> getLatestPrevision(Long entrepotId, Long produitId, User user) {
+        validateAccess(entrepotId, user);
+        return previsionRepository.findLatestByProduitIdAndEntrepotId(produitId, entrepotId)
+                .map(p -> enrichPrevision(p, entrepotId));
+    }
+
 
 }

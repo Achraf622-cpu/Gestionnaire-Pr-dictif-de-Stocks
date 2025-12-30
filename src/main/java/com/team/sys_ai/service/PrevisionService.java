@@ -259,4 +259,23 @@ public class    PrevisionService {
     }
 
 
+    /**
+     * Generate fallback recommendation without AI.
+     */
+    private String generateFallbackRecommendation(Integer currentStock, int predictedSales,
+                                                  Integer threshold, Prevision.NiveauRisque riskLevel) {
+        return switch (riskLevel) {
+            case CRITIQUE -> String.format(
+                    "URGENT: Commander immédiatement. Stock critique (%d) insuffisant pour couvrir les ventes prévues (%d)",
+                    currentStock, predictedSales);
+            case ELEVE -> String.format(
+                    "Commander %d unités dans les 7 prochains jours pour éviter une rupture de stock",
+                    Math.max(predictedSales - currentStock + threshold, threshold));
+            case MOYEN -> String.format(
+                    "Planifier un réapprovisionnement de %d unités dans les 15 prochains jours",
+                    Math.max(threshold, (int)(predictedSales * 0.5)));
+            case FAIBLE -> "Stock suffisant. Aucune action immédiate requise.";
+        };
+    }
+
 }

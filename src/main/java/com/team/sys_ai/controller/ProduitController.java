@@ -74,5 +74,15 @@ public class ProduitController {
         return ResponseEntity.ok(produitService.getAllProduitsForAdmin());
     }
 
+    /**
+     * Get product with sensitive data (ADMIN only).
+     */
+    @GetMapping("/admin/produits/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProduitAdminDTO> getProduitByIdForAdmin(@PathVariable Long id) {
+        return ResponseEntity.ok(produitService.getProduitByIdForAdmin(id));
+    }
+
+
 
 }

@@ -166,6 +166,17 @@ public class    PrevisionService {
                 .toList();
     }
 
+    /**
+     * Calculate predicted sales based on historical data.
+     */
+    private int calculatePredictedSales(Double avgDailySales, Integer recentSales) {
+        if (avgDailySales == null || avgDailySales == 0) {
+            return recentSales != null ? recentSales : 0;
+        }
+        // Use weighted average: 70% avg, 30% recent
+        double predicted = (avgDailySales * 0.7 + (recentSales != null ? recentSales / 30.0 : 0) * 0.3) * 30;
+        return (int) Math.ceil(predicted);
+    }
 
 
 }

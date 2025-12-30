@@ -136,6 +136,13 @@ public class HistoriqueVenteService {
         return historiqueVenteRepository.getSalesByDayOfWeek(produitId, entrepotId);
     }
 
+    /**
+     * Get monthly sales.
+     */
+    public List<Object[]> getMonthlySales(Long produitId, Long entrepotId) {
+        return historiqueVenteRepository.getMonthlySales(produitId, entrepotId);
+    }
+
 
 
 }

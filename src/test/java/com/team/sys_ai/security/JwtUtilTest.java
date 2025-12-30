@@ -58,4 +58,18 @@ class JwtUtilTest {
         assertThat(username).isEqualTo("testuser");
     }
 
+    @Test
+    @DisplayName("Should extract role from token")
+    void extractRole_ValidToken_ReturnsRole() {
+        // Given
+        String token = jwtUtil.generateToken("testuser", "ADMIN", null);
+
+        // When
+        String role = jwtUtil.extractRole(token);
+
+        // Then
+        assertThat(role).isEqualTo("ADMIN");
+    }
+
+
 }

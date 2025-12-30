@@ -53,6 +53,16 @@ public class ProduitController {
         return ResponseEntity.ok(produitService.searchProduits(nom));
     }
 
+    /**
+     * Get product by ID (role-based response).
+     */
+    @GetMapping("/produits/{id}")
+    public ResponseEntity<?> getProduitById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(produitService.getProduitById(id, userDetails.getUser()));
+    }
+
 
 
 }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/api/stocks")
 @RequiredArgsConstructor
@@ -28,5 +27,16 @@ public class StockController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(stockService.getStocksByEntrepot(entrepotId, userDetails.getUser()));
     }
+
+    /**
+     * Get stocks at alert level for a warehouse.
+     */
+    @GetMapping("/entrepot/{entrepotId}/alerts")
+    public ResponseEntity<List<StockDTO>> getStocksAtAlert(
+            @PathVariable Long entrepotId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(stockService.getStocksAtAlert(entrepotId, userDetails.getUser()));
+    }
+
 
 }

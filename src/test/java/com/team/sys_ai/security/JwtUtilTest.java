@@ -140,5 +140,17 @@ class JwtUtilTest {
         assertThat(role).isEqualTo("GESTIONNAIRE");
     }
 
+    @Test
+    @DisplayName("Should extract expiration date from token")
+    void extractExpiration_ValidToken_ReturnsDate() {
+        // Given
+        String token = jwtUtil.generateToken(userDetails);
 
+        // When
+        var expiration = jwtUtil.extractExpiration(token);
+
+        // Then
+        assertThat(expiration).isNotNull();
+        assertThat(expiration).isAfter(new java.util.Date());
+    }
 }

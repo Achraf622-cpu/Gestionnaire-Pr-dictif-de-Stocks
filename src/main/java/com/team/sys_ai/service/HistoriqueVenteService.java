@@ -114,5 +114,12 @@ public class HistoriqueVenteService {
         return historiqueVenteMapper.toDTO(vente);
     }
 
+    /**
+     * Get total quantity sold for a product in a warehouse during a period.
+     */
+    public Integer getTotalQuantitySold(Long produitId, Long entrepotId, LocalDate startDate, LocalDate endDate) {
+        return historiqueVenteRepository.getTotalQuantitySold(produitId, entrepotId, startDate, endDate);
+    }
+
 
 }

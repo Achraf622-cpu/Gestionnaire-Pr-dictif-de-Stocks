@@ -125,4 +125,20 @@ class JwtUtilTest {
         assertThat(isValid).isFalse();
     }
 
+    @Test
+    @DisplayName("Should generate token with entrepot ID")
+    void generateToken_WithEntrepotId_IncludesInClaims() {
+        // When
+        String token = jwtUtil.generateToken("gestionnaire", "GESTIONNAIRE", 1L);
+
+        // Then
+        assertThat(token).isNotNull();
+        String username = jwtUtil.extractUsername(token);
+        String role = jwtUtil.extractRole(token);
+
+        assertThat(username).isEqualTo("gestionnaire");
+        assertThat(role).isEqualTo("GESTIONNAIRE");
+    }
+
+
 }

@@ -1,4 +1,4 @@
-package com.team.sys_ai.security;
+    package com.team.sys_ai.security;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

@@ -41,5 +41,14 @@ public class PrevisionController {
         return ResponseEntity.ok(previsionService.getHighRiskPrevisions(entrepotId, userDetails.getUser()));
     }
 
+    /**
+     * Get all high-risk predictions (ADMIN only).
+     */
+    @GetMapping("/high-risk/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<PrevisionDTO>> getAllHighRiskPrevisions() {
+        return ResponseEntity.ok(previsionService.getAllHighRiskPrevisions());
+    }
+
 
 }

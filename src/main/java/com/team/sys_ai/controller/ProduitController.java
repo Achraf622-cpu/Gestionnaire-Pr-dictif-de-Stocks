@@ -92,6 +92,18 @@ public class ProduitController {
         return ResponseEntity.status(HttpStatus.CREATED).body(produitService.createProduit(dto));
     }
 
+    /**
+     * Update product (ADMIN only).
+     */
+    @PutMapping("/admin/produits/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProduitAdminDTO> updateProduit(
+            @PathVariable Long id,
+            @Valid @RequestBody ProduitAdminDTO dto) {
+        return ResponseEntity.ok(produitService.updateProduit(id, dto));
+    }
+
+
 
 
 }

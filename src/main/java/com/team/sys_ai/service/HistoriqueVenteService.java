@@ -129,6 +129,13 @@ public class HistoriqueVenteService {
         return historiqueVenteRepository.getAverageDailySales(produitId, entrepotId, startDate);
     }
 
+    /**
+     * Get sales by day of week.
+     */
+    public List<Object[]> getSalesByDayOfWeek(Long produitId, Long entrepotId) {
+        return historiqueVenteRepository.getSalesByDayOfWeek(produitId, entrepotId);
+    }
+
 
 
 }

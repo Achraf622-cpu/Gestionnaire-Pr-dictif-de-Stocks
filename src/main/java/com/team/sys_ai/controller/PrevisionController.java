@@ -50,5 +50,18 @@ public class PrevisionController {
         return ResponseEntity.ok(previsionService.getAllHighRiskPrevisions());
     }
 
+    /**
+     * Get latest prediction for a product in a warehouse.
+     */
+    @GetMapping("/entrepot/{entrepotId}/produit/{produitId}/latest")
+    public ResponseEntity<PrevisionDTO> getLatestPrevision(
+            @PathVariable Long entrepotId,
+            @PathVariable Long produitId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Optional<PrevisionDTO> prevision = previsionService.getLatestPrevision(entrepotId, produitId, userDetails.getUser());
+        return prevision.map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
+
 
 }

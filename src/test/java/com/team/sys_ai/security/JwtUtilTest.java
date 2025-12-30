@@ -102,5 +102,18 @@ class JwtUtilTest {
         assertThat(isValid).isFalse();
     }
 
+    @Test
+    @DisplayName("Should validate token format")
+    void validateToken_ValidFormat_ReturnsTrue() {
+        // Given
+        String token = jwtUtil.generateToken(userDetails);
+
+        // When
+        Boolean isValid = jwtUtil.validateToken(token);
+
+        // Then
+        assertThat(isValid).isTrue();
+    }
+
 
 }

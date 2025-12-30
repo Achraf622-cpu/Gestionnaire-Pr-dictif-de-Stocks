@@ -72,5 +72,13 @@ public class    PrevisionService {
         return enrichPrevisions(previsions, entrepotId);
     }
 
+    /**
+     * Get all high-risk predictions (ADMIN only).
+     */
+    public List<PrevisionDTO> getAllHighRiskPrevisions() {
+        List<Prevision> previsions = previsionRepository.findAllHighRiskPredictions();
+        return previsionMapper.toDTOList(previsions);
+    }
+
 
 }

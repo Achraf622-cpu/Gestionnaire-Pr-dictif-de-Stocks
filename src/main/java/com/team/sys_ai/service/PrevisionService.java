@@ -193,6 +193,27 @@ public class    PrevisionService {
             return Math.min(95.0, 85.0 + (salesRecordCount - 30) * 0.1);
         }
     }
+    /**
+     * Calculate risk level.
+     */
+    private Prevision.NiveauRisque calculateRiskLevel(Integer currentStock, int predictedSales, Integer threshold) {
+        if (currentStock == null || currentStock == 0) {
+            return Prevision.NiveauRisque.CRITIQUE;
+        }
+
+        double daysOfStock = predictedSales > 0 ? (currentStock * 30.0) / predictedSales : 999;
+
+        if (daysOfStock <= 7) {
+            return Prevision.NiveauRisque.CRITIQUE;
+        } else if (daysOfStock <= 15) {
+            return Prevision.NiveauRisque.ELEVE;
+        } else if (currentStock <= threshold * 1.5) {
+            return Prevision.NiveauRisque.MOYEN;
+        } else {
+            return Prevision.NiveauRisque.FAIBLE;
+        }
+    }
+
 
 
 }

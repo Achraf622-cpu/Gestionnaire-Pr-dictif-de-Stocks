@@ -73,5 +73,15 @@ public class EntrepotService {
         return entrepotMapper.toDTO(entrepot);
     }
 
+    /**
+     * Get entrepot by ID with access check.
+     */
+    public EntrepotDTO getEntrepotById(Long id, User user) {
+        if (!user.hasAccessToEntrepot(id)) {
+            throw new EntrepotAccessDeniedException(id, user.getId());
+        }
+        return getEntrepotById(id);
+    }
+
 
 }

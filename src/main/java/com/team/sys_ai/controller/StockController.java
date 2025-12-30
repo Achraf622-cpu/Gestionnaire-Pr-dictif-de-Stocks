@@ -47,7 +47,6 @@ public class StockController {
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(stockService.getCriticalStocks(entrepotId, userDetails.getUser()));
     }
-
     /**
      * Get all stocks at alert level (ADMIN only).
      */
@@ -55,6 +54,17 @@ public class StockController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<StockDTO>> getAllStocksAtAlert() {
         return ResponseEntity.ok(stockService.getAllStocksAtAlert());
+    }
+
+    /**
+     * Get stock for a specific product in a warehouse.
+     */
+    @GetMapping("/entrepot/{entrepotId}/produit/{produitId}")
+    public ResponseEntity<StockDTO> getStock(
+            @PathVariable Long entrepotId,
+            @PathVariable Long produitId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(stockService.getStock(entrepotId, produitId, userDetails.getUser()));
     }
 
 

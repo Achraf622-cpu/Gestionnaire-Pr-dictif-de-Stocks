@@ -150,5 +150,22 @@ public class EntrepotService {
         return entrepotMapper.toDTO(entrepot);
     }
 
+    /**
+     * Get entrepot with enriched data.
+     */
+    public EntrepotDTO getEntrepotWithStats(Long id) {
+        Entrepot entrepot = findById(id);
+        EntrepotDTO dto = entrepotMapper.toDTO(entrepot);
+
+        // Add statistics
+        List<?> stocks = stockRepository.findByEntrepotId(id);
+        dto.setNombreProduits(stocks.size());
+
+        List<?> alerts = stockRepository.findStocksAtAlertLevelByEntrepot(id);
+        dto.setNombreAlertes(alerts.size());
+
+        return dto;
+    }
+
 
 }

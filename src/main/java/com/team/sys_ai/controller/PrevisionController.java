@@ -31,5 +31,15 @@ public class PrevisionController {
         return ResponseEntity.ok(previsionService.getPrevisionsByEntrepot(entrepotId, userDetails.getUser()));
     }
 
+    /**
+     * Get high-risk predictions for a warehouse.
+     */
+    @GetMapping("/entrepot/{entrepotId}/high-risk")
+    public ResponseEntity<List<PrevisionDTO>> getHighRiskPrevisions(
+            @PathVariable Long entrepotId,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(previsionService.getHighRiskPrevisions(entrepotId, userDetails.getUser()));
+    }
+
 
 }

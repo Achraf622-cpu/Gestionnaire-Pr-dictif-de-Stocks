@@ -121,5 +121,14 @@ public class HistoriqueVenteService {
         return historiqueVenteRepository.getTotalQuantitySold(produitId, entrepotId, startDate, endDate);
     }
 
+    /**
+     * Get average daily sales.
+     */
+    public Double getAverageDailySales(Long produitId, Long entrepotId, int daysBack) {
+        LocalDate startDate = LocalDate.now().minusDays(daysBack);
+        return historiqueVenteRepository.getAverageDailySales(produitId, entrepotId, startDate);
+    }
+
+
 
 }

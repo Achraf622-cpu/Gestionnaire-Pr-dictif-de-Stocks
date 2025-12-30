@@ -115,5 +115,14 @@ class JwtUtilTest {
         assertThat(isValid).isTrue();
     }
 
+    @Test
+    @DisplayName("Should return false for invalid token")
+    void validateToken_InvalidToken_ReturnsFalse() {
+        // When
+        Boolean isValid = jwtUtil.validateToken("invalid.token.here");
+
+        // Then
+        assertThat(isValid).isFalse();
+    }
 
 }

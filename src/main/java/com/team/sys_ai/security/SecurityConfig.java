@@ -33,33 +33,35 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/error").permitAll()
-                .requestMatchers("/actuator/**").permitAll()
-                
-                // Admin-only endpoints
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/produits/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/produits/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/produits/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/entrepots/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/entrepots/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/entrepots/**").hasRole("ADMIN")
-                
-                // All other endpoints require authentication
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+
+                        // Swagger UI
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+
+                        // Admin-only endpoints
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/produits/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/produits/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/produits/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/entrepots/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/entrepots/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/entrepots/**").hasRole("ADMIN")
+
+                        // All other endpoints require authentication
+                        .anyRequest().authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();

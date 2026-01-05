@@ -14,7 +14,9 @@ import com.team.sys_ai.repository.HistoriqueVenteRepository;
 import com.team.sys_ai.repository.ProduitRepository;
 import com.team.sys_ai.repository.StockRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +38,6 @@ public class HistoriqueVenteService {
     private final StockService stockService;
     private final HistoriqueVenteMapper historiqueVenteMapper;
 
-
     /**
      * Validate user has access to warehouse.
      */
@@ -47,7 +48,7 @@ public class HistoriqueVenteService {
     }
 
     /**
-     * Get sales history for a warehouse.
+     * Get sales history for a warehouse (non-paginated).
      */
     public List<HistoriqueVenteDTO> getHistoriqueByEntrepot(Long entrepotId, User user) {
         validateAccess(entrepotId, user);
@@ -55,7 +56,16 @@ public class HistoriqueVenteService {
     }
 
     /**
-     * Get sales history between dates for a warehouse.
+     * Get sales history for a warehouse (paginated).
+     */
+    public Page<HistoriqueVenteDTO> getHistoriqueByEntrepot(Long entrepotId, User user, Pageable pageable) {
+        validateAccess(entrepotId, user);
+        return historiqueVenteRepository.findByEntrepotId(entrepotId, pageable)
+                .map(historiqueVenteMapper::toDTO);
+    }
+
+    /**
+     * Get sales history between dates for a warehouse (non-paginated).
      */
     public List<HistoriqueVenteDTO> getHistoriqueByEntrepotAndDateRange(
             Long entrepotId, LocalDate startDate, LocalDate endDate, User user) {
@@ -65,7 +75,17 @@ public class HistoriqueVenteService {
     }
 
     /**
-     * Get sales history for a product in a warehouse.
+     * Get sales history between dates for a warehouse (paginated).
+     */
+    public Page<HistoriqueVenteDTO> getHistoriqueByEntrepotAndDateRange(
+            Long entrepotId, LocalDate startDate, LocalDate endDate, User user, Pageable pageable) {
+        validateAccess(entrepotId, user);
+        return historiqueVenteRepository.findByEntrepotIdAndDateVenteBetween(entrepotId, startDate, endDate, pageable)
+                .map(historiqueVenteMapper::toDTO);
+    }
+
+    /**
+     * Get sales history for a product in a warehouse (non-paginated).
      */
     public List<HistoriqueVenteDTO> getHistoriqueByProduitAndEntrepot(
             Long produitId, Long entrepotId, User user) {
@@ -75,18 +95,29 @@ public class HistoriqueVenteService {
     }
 
     /**
+     * Get sales history for a product in a warehouse (paginated).
+     */
+    public Page<HistoriqueVenteDTO> getHistoriqueByProduitAndEntrepot(
+            Long produitId, Long entrepotId, User user, Pageable pageable) {
+        validateAccess(entrepotId, user);
+        return historiqueVenteRepository.findByProduitIdAndEntrepotId(produitId, entrepotId, pageable)
+                .map(historiqueVenteMapper::toDTO);
+    }
+
+    /**
      * Record a sale (and update stock).
      */
     @Transactional
     public HistoriqueVenteDTO recordSale(Long entrepotId, Long produitId, Integer quantite, User user) {
         return recordSale(entrepotId, produitId, quantite, LocalDate.now(), user);
     }
+
     /**
      * Record a sale with specific date.
      */
     @Transactional
     public HistoriqueVenteDTO recordSale(Long entrepotId, Long produitId, Integer quantite,
-                                         LocalDate dateVente, User user) {
+            LocalDate dateVente, User user) {
         validateAccess(entrepotId, user);
 
         if (quantite <= 0) {
@@ -150,6 +181,4 @@ public class HistoriqueVenteService {
         LocalDate since = LocalDate.now().minusDays(daysBack);
         return historiqueVenteRepository.getTopSellingProducts(entrepotId, since, PageRequest.of(0, limit));
     }
-
-
 }

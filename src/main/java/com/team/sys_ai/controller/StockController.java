@@ -4,6 +4,9 @@ import com.team.sys_ai.dto.StockDTO;
 import com.team.sys_ai.security.CustomUserDetailsService.CustomUserDetails;
 import com.team.sys_ai.service.StockService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,41 +22,46 @@ public class StockController {
     private final StockService stockService;
 
     /**
-     * Get all stocks for a warehouse.
+     * Get all stocks for a warehouse (paginated).
      */
     @GetMapping("/entrepot/{entrepotId}")
-    public ResponseEntity<List<StockDTO>> getStocksByEntrepot(
+    public ResponseEntity<Page<StockDTO>> getStocksByEntrepot(
             @PathVariable Long entrepotId,
+            @PageableDefault(size = 20) Pageable pageable,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(stockService.getStocksByEntrepot(entrepotId, userDetails.getUser()));
+        return ResponseEntity.ok(stockService.getStocksByEntrepot(entrepotId, userDetails.getUser(), pageable));
     }
 
     /**
-     * Get stocks at alert level for a warehouse.
+     * Get stocks at alert level for a warehouse (paginated).
      */
     @GetMapping("/entrepot/{entrepotId}/alerts")
-    public ResponseEntity<List<StockDTO>> getStocksAtAlert(
+    public ResponseEntity<Page<StockDTO>> getStocksAtAlert(
             @PathVariable Long entrepotId,
+            @PageableDefault(size = 20) Pageable pageable,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(stockService.getStocksAtAlert(entrepotId, userDetails.getUser()));
+        return ResponseEntity.ok(stockService.getStocksAtAlert(entrepotId, userDetails.getUser(), pageable));
     }
 
     /**
-     * Get critical stocks for a warehouse.
+     * Get critical stocks for a warehouse (paginated).
      */
     @GetMapping("/entrepot/{entrepotId}/critical")
-    public ResponseEntity<List<StockDTO>> getCriticalStocks(
+    public ResponseEntity<Page<StockDTO>> getCriticalStocks(
             @PathVariable Long entrepotId,
+            @PageableDefault(size = 20) Pageable pageable,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(stockService.getCriticalStocks(entrepotId, userDetails.getUser()));
+        return ResponseEntity.ok(stockService.getCriticalStocks(entrepotId, userDetails.getUser(), pageable));
     }
+
     /**
-     * Get all stocks at alert level (ADMIN only).
+     * Get all stocks at alert level (ADMIN only, paginated).
      */
     @GetMapping("/alerts/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<StockDTO>> getAllStocksAtAlert() {
-        return ResponseEntity.ok(stockService.getAllStocksAtAlert());
+    public ResponseEntity<Page<StockDTO>> getAllStocksAtAlert(
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(stockService.getAllStocksAtAlert(pageable));
     }
 
     /**
@@ -128,5 +136,4 @@ public class StockController {
     public ResponseEntity<Integer> getTotalQuantity(@PathVariable Long produitId) {
         return ResponseEntity.ok(stockService.getTotalQuantity(produitId));
     }
-
 }

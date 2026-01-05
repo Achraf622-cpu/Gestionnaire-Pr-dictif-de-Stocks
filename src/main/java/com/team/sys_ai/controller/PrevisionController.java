@@ -4,6 +4,9 @@ import com.team.sys_ai.dto.PrevisionDTO;
 import com.team.sys_ai.security.CustomUserDetailsService.CustomUserDetails;
 import com.team.sys_ai.service.PrevisionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
-
 @RestController
 @RequestMapping("/api/previsions")
 @RequiredArgsConstructor
@@ -22,32 +24,35 @@ public class PrevisionController {
     private final PrevisionService previsionService;
 
     /**
-     * Get predictions for a warehouse.
+     * Get predictions for a warehouse (paginated).
      */
     @GetMapping("/entrepot/{entrepotId}")
-    public ResponseEntity<List<PrevisionDTO>> getPrevisionsByEntrepot(
+    public ResponseEntity<Page<PrevisionDTO>> getPrevisionsByEntrepot(
             @PathVariable Long entrepotId,
+            @PageableDefault(size = 20) Pageable pageable,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(previsionService.getPrevisionsByEntrepot(entrepotId, userDetails.getUser()));
+        return ResponseEntity.ok(previsionService.getPrevisionsByEntrepot(entrepotId, userDetails.getUser(), pageable));
     }
 
     /**
-     * Get high-risk predictions for a warehouse.
+     * Get high-risk predictions for a warehouse (paginated).
      */
     @GetMapping("/entrepot/{entrepotId}/high-risk")
-    public ResponseEntity<List<PrevisionDTO>> getHighRiskPrevisions(
+    public ResponseEntity<Page<PrevisionDTO>> getHighRiskPrevisions(
             @PathVariable Long entrepotId,
+            @PageableDefault(size = 20) Pageable pageable,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        return ResponseEntity.ok(previsionService.getHighRiskPrevisions(entrepotId, userDetails.getUser()));
+        return ResponseEntity.ok(previsionService.getHighRiskPrevisions(entrepotId, userDetails.getUser(), pageable));
     }
 
     /**
-     * Get all high-risk predictions (ADMIN only).
+     * Get all high-risk predictions (ADMIN only, paginated).
      */
     @GetMapping("/high-risk/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<PrevisionDTO>> getAllHighRiskPrevisions() {
-        return ResponseEntity.ok(previsionService.getAllHighRiskPrevisions());
+    public ResponseEntity<Page<PrevisionDTO>> getAllHighRiskPrevisions(
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(previsionService.getAllHighRiskPrevisions(pageable));
     }
 
     /**
@@ -58,9 +63,10 @@ public class PrevisionController {
             @PathVariable Long entrepotId,
             @PathVariable Long produitId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        Optional<PrevisionDTO> prevision = previsionService.getLatestPrevision(entrepotId, produitId, userDetails.getUser());
+        Optional<PrevisionDTO> prevision = previsionService.getLatestPrevision(entrepotId, produitId,
+                userDetails.getUser());
         return prevision.map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
@@ -72,7 +78,7 @@ public class PrevisionController {
             @PathVariable Long produitId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(previsionService.generatePrevision(entrepotId, produitId, userDetails.getUser()));
+                .body(previsionService.generatePrevision(entrepotId, produitId, userDetails.getUser()));
     }
 
     /**
@@ -83,6 +89,6 @@ public class PrevisionController {
             @PathVariable Long entrepotId,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(previsionService.generatePrevisionsForEntrepot(entrepotId, userDetails.getUser()));
+                .body(previsionService.generatePrevisionsForEntrepot(entrepotId, userDetails.getUser()));
     }
 }

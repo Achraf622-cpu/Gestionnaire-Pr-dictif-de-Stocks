@@ -2,6 +2,8 @@ package com.team.sys_ai.repository;
 
 import com.team.sys_ai.entity.Role;
 import com.team.sys_ai.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,7 +27,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRole(Role role);
 
+    // Paginated version
+    Page<User> findByRole(Role role, Pageable pageable);
+
     List<User> findByActifTrue();
+
+    // Paginated version
+    Page<User> findByActifTrue(Pageable pageable);
 
     List<User> findByActifTrueAndRole(Role role);
 

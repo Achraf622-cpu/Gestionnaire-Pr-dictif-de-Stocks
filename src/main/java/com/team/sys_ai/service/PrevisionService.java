@@ -9,7 +9,9 @@ import com.team.sys_ai.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +55,7 @@ public class PrevisionService {
     }
 
     /**
-     * Get predictions for a warehouse.
+     * Get predictions for a warehouse (non-paginated).
      */
     public List<PrevisionDTO> getPrevisionsByEntrepot(Long entrepotId, User user) {
         validateAccess(entrepotId, user);
@@ -62,7 +64,16 @@ public class PrevisionService {
     }
 
     /**
-     * Get high-risk predictions for a warehouse.
+     * Get predictions for a warehouse (paginated).
+     */
+    public Page<PrevisionDTO> getPrevisionsByEntrepot(Long entrepotId, User user, Pageable pageable) {
+        validateAccess(entrepotId, user);
+        return previsionRepository.findByEntrepotId(entrepotId, pageable)
+                .map(p -> enrichPrevision(p, entrepotId));
+    }
+
+    /**
+     * Get high-risk predictions for a warehouse (non-paginated).
      */
     public List<PrevisionDTO> getHighRiskPrevisions(Long entrepotId, User user) {
         validateAccess(entrepotId, user);
@@ -71,11 +82,28 @@ public class PrevisionService {
     }
 
     /**
-     * Get all high-risk predictions (ADMIN only).
+     * Get high-risk predictions for a warehouse (paginated).
+     */
+    public Page<PrevisionDTO> getHighRiskPrevisions(Long entrepotId, User user, Pageable pageable) {
+        validateAccess(entrepotId, user);
+        return previsionRepository.findHighRiskPredictions(entrepotId, pageable)
+                .map(p -> enrichPrevision(p, entrepotId));
+    }
+
+    /**
+     * Get all high-risk predictions (ADMIN only, non-paginated).
      */
     public List<PrevisionDTO> getAllHighRiskPrevisions() {
         List<Prevision> previsions = previsionRepository.findAllHighRiskPredictions();
         return previsionMapper.toDTOList(previsions);
+    }
+
+    /**
+     * Get all high-risk predictions (ADMIN only, paginated).
+     */
+    public Page<PrevisionDTO> getAllHighRiskPrevisions(Pageable pageable) {
+        return previsionRepository.findAllHighRiskPredictions(pageable)
+                .map(previsionMapper::toDTO);
     }
 
     /**

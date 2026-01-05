@@ -11,6 +11,8 @@ import com.team.sys_ai.mapper.UserMapper;
 import com.team.sys_ai.repository.EntrepotRepository;
 import com.team.sys_ai.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,17 +29,49 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Get all users (non-paginated for backward compatibility).
+     */
     public List<UserDTO> getAllUsers() {
         return userMapper.toDTOList(userRepository.findAll());
     }
 
+    /**
+     * Get all users (paginated).
+     */
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(userMapper::toDTO);
+    }
 
+    /**
+     * Get active users (non-paginated).
+     */
     public List<UserDTO> getActiveUsers() {
         return userMapper.toDTOList(userRepository.findByActifTrue());
     }
 
+    /**
+     * Get active users (paginated).
+     */
+    public Page<UserDTO> getActiveUsers(Pageable pageable) {
+        return userRepository.findByActifTrue(pageable)
+                .map(userMapper::toDTO);
+    }
+
+    /**
+     * Get users by role (non-paginated).
+     */
     public List<UserDTO> getUsersByRole(Role role) {
         return userMapper.toDTOList(userRepository.findByRole(role));
+    }
+
+    /**
+     * Get users by role (paginated).
+     */
+    public Page<UserDTO> getUsersByRole(Role role, Pageable pageable) {
+        return userRepository.findByRole(role, pageable)
+                .map(userMapper::toDTO);
     }
 
     public UserDTO getUserById(Long id) {
@@ -66,7 +100,7 @@ public class UserService {
 
         if (dto.getRole() == Role.GESTIONNAIRE && dto.getEntrepotAssigneId() != null) {
             Entrepot entrepot = entrepotRepository.findById(dto.getEntrepotAssigneId())
-                .orElseThrow(() -> new ResourceNotFoundException("Entrepôt", "id", dto.getEntrepotAssigneId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Entrepôt", "id", dto.getEntrepotAssigneId()));
             user.setEntrepotAssigne(entrepot);
         }
 
@@ -78,16 +112,16 @@ public class UserService {
     public UserDTO updateUser(Long id, UserDTO dto) {
         User user = findById(id);
         userRepository.findByLogin(dto.getLogin())
-            .filter(u -> !u.getId().equals(id))
-            .ifPresent(u -> {
-                throw new BusinessValidationException("login", "Ce login est déjà utilisé");
-            });
+                .filter(u -> !u.getId().equals(id))
+                .ifPresent(u -> {
+                    throw new BusinessValidationException("login", "Ce login est déjà utilisé");
+                });
 
         userRepository.findByEmail(dto.getEmail())
-            .filter(u -> !u.getId().equals(id))
-            .ifPresent(u -> {
-                throw new BusinessValidationException("email", "Cet email est déjà utilisé");
-            });
+                .filter(u -> !u.getId().equals(id))
+                .ifPresent(u -> {
+                    throw new BusinessValidationException("email", "Cet email est déjà utilisé");
+                });
 
         validateRoleAndWarehouse(dto.getRole(), dto.getEntrepotAssigneId());
 
@@ -95,7 +129,7 @@ public class UserService {
 
         if (dto.getRole() == Role.GESTIONNAIRE && dto.getEntrepotAssigneId() != null) {
             Entrepot entrepot = entrepotRepository.findById(dto.getEntrepotAssigneId())
-                .orElseThrow(() -> new ResourceNotFoundException("Entrepôt", "id", dto.getEntrepotAssigneId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Entrepôt", "id", dto.getEntrepotAssigneId()));
             user.setEntrepotAssigne(entrepot);
         } else if (dto.getRole() == Role.ADMIN) {
             user.setEntrepotAssigne(null);
@@ -121,7 +155,7 @@ public class UserService {
         }
 
         Entrepot entrepot = entrepotRepository.findById(entrepotId)
-            .orElseThrow(() -> new ResourceNotFoundException("Entrepôt", "id", entrepotId));
+                .orElseThrow(() -> new ResourceNotFoundException("Entrepôt", "id", entrepotId));
 
         user.setEntrepotAssigne(entrepot);
         user = userRepository.save(user);
@@ -152,17 +186,17 @@ public class UserService {
 
     private void validateRoleAndWarehouse(Role role, Long entrepotId) {
         if (role == Role.GESTIONNAIRE && entrepotId == null) {
-            throw new BusinessValidationException("entrepotAssigneId", 
-                "Un gestionnaire doit être assigné à un entrepôt");
+            throw new BusinessValidationException("entrepotAssigneId",
+                    "Un gestionnaire doit être assigné à un entrepôt");
         }
         if (role == Role.ADMIN && entrepotId != null) {
-            throw new BusinessValidationException("entrepotAssigneId", 
-                "Un administrateur ne peut pas être assigné à un entrepôt spécifique");
+            throw new BusinessValidationException("entrepotAssigneId",
+                    "Un administrateur ne peut pas être assigné à un entrepôt spécifique");
         }
     }
 
     private User findById(Long id) {
         return userRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "id", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilisateur", "id", id));
     }
 }

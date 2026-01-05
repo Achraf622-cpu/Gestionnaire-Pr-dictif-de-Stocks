@@ -6,6 +6,9 @@ import com.team.sys_ai.security.CustomUserDetailsService.CustomUserDetails;
 import com.team.sys_ai.service.ProduitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,11 +25,12 @@ public class ProduitController {
     private final ProduitService produitService;
 
     /**
-     * Get all products (without sensitive data).
+     * Get all products (paginated, without sensitive data).
      */
     @GetMapping("/produits")
-    public ResponseEntity<List<ProduitDTO>> getAllProduits() {
-        return ResponseEntity.ok(produitService.getAllProduits());
+    public ResponseEntity<Page<ProduitDTO>> getAllProduits(
+            @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
+        return ResponseEntity.ok(produitService.getAllProduits(pageable));
     }
 
     /**
@@ -38,19 +42,23 @@ public class ProduitController {
     }
 
     /**
-     * Get products by category.
+     * Get products by category (paginated).
      */
     @GetMapping("/produits/categorie/{categorie}")
-    public ResponseEntity<List<ProduitDTO>> getProduitsByCategorie(@PathVariable String categorie) {
-        return ResponseEntity.ok(produitService.getProduitsByCategorie(categorie));
+    public ResponseEntity<Page<ProduitDTO>> getProduitsByCategorie(
+            @PathVariable String categorie,
+            @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
+        return ResponseEntity.ok(produitService.getProduitsByCategorie(categorie, pageable));
     }
 
     /**
-     * Search products by name.
+     * Search products by name (paginated).
      */
     @GetMapping("/produits/search")
-    public ResponseEntity<List<ProduitDTO>> searchProduits(@RequestParam String nom) {
-        return ResponseEntity.ok(produitService.searchProduits(nom));
+    public ResponseEntity<Page<ProduitDTO>> searchProduits(
+            @RequestParam String nom,
+            @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
+        return ResponseEntity.ok(produitService.searchProduits(nom, pageable));
     }
 
     /**
@@ -66,12 +74,13 @@ public class ProduitController {
     // ===== ADMIN ONLY ENDPOINTS =====
 
     /**
-     * Get all products with sensitive data (ADMIN only).
+     * Get all products with sensitive data (ADMIN only, paginated).
      */
     @GetMapping("/admin/produits")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ProduitAdminDTO>> getAllProduitsForAdmin() {
-        return ResponseEntity.ok(produitService.getAllProduitsForAdmin());
+    public ResponseEntity<Page<ProduitAdminDTO>> getAllProduitsForAdmin(
+            @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
+        return ResponseEntity.ok(produitService.getAllProduitsForAdmin(pageable));
     }
 
     /**
@@ -102,6 +111,7 @@ public class ProduitController {
             @Valid @RequestBody ProduitAdminDTO dto) {
         return ResponseEntity.ok(produitService.updateProduit(id, dto));
     }
+
     /**
      * Deactivate product (ADMIN only).
      */
@@ -120,5 +130,4 @@ public class ProduitController {
         produitService.deleteProduit(id);
         return ResponseEntity.noContent().build();
     }
-
 }

@@ -1,12 +1,12 @@
 package com.team.sys_ai.controller;
 
+import com.team.sys_ai.dto.PageResponse;
 import com.team.sys_ai.dto.UserCreateDTO;
 import com.team.sys_ai.dto.UserDTO;
 import com.team.sys_ai.entity.Role;
 import com.team.sys_ai.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -28,28 +28,28 @@ public class UserController {
      * Get all users (paginated).
      */
     @GetMapping
-    public ResponseEntity<Page<UserDTO>> getAllUsers(
+    public ResponseEntity<PageResponse<UserDTO>> getAllUsers(
             @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
-        return ResponseEntity.ok(userService.getAllUsers(pageable));
+        return ResponseEntity.ok(PageResponse.from(userService.getAllUsers(pageable)));
     }
 
     /**
      * Get active users (paginated).
      */
     @GetMapping("/active")
-    public ResponseEntity<Page<UserDTO>> getActiveUsers(
+    public ResponseEntity<PageResponse<UserDTO>> getActiveUsers(
             @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
-        return ResponseEntity.ok(userService.getActiveUsers(pageable));
+        return ResponseEntity.ok(PageResponse.from(userService.getActiveUsers(pageable)));
     }
 
     /**
      * Get users by role (paginated).
      */
     @GetMapping("/role/{role}")
-    public ResponseEntity<Page<UserDTO>> getUsersByRole(
+    public ResponseEntity<PageResponse<UserDTO>> getUsersByRole(
             @PathVariable Role role,
             @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
-        return ResponseEntity.ok(userService.getUsersByRole(role, pageable));
+        return ResponseEntity.ok(PageResponse.from(userService.getUsersByRole(role, pageable)));
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.team.sys_ai.config;
 
+import com.team.sys_ai.security.CustomUserDetailsService.CustomUserDetails;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
@@ -11,6 +12,7 @@ import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 /**
  * OpenAPI/Swagger configuration for API documentation.
@@ -19,9 +21,13 @@ import org.springframework.data.domain.Pageable;
 public class OpenApiConfig {
 
         static {
-                // Configure SpringDoc to show Pageable as simple query parameters (page, size)
-                // instead of a JSON object
+                // Hide Pageable internals - show as simple page/size query params
                 SpringDocUtils.getConfig().replaceWithClass(Pageable.class, PageableAsQueryParam.class);
+
+                // Completely ignore CustomUserDetails - it's injected by Spring Security
+                SpringDocUtils.getConfig().addAnnotationsToIgnore(AuthenticationPrincipal.class);
+                SpringDocUtils.getConfig().removeRequestWrapperToIgnore(CustomUserDetails.class);
+                SpringDocUtils.getConfig().addRequestWrapperToIgnore(CustomUserDetails.class);
         }
 
         /**

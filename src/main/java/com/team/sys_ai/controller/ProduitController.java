@@ -1,12 +1,13 @@
 package com.team.sys_ai.controller;
 
+import com.team.sys_ai.dto.PageResponse;
 import com.team.sys_ai.dto.ProduitAdminDTO;
 import com.team.sys_ai.dto.ProduitDTO;
 import com.team.sys_ai.security.CustomUserDetailsService.CustomUserDetails;
 import com.team.sys_ai.service.ProduitService;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -28,9 +29,9 @@ public class ProduitController {
      * Get all products (paginated, without sensitive data).
      */
     @GetMapping("/produits")
-    public ResponseEntity<Page<ProduitDTO>> getAllProduits(
+    public ResponseEntity<PageResponse<ProduitDTO>> getAllProduits(
             @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
-        return ResponseEntity.ok(produitService.getAllProduits(pageable));
+        return ResponseEntity.ok(PageResponse.from(produitService.getAllProduits(pageable)));
     }
 
     /**
@@ -45,20 +46,20 @@ public class ProduitController {
      * Get products by category (paginated).
      */
     @GetMapping("/produits/categorie/{categorie}")
-    public ResponseEntity<Page<ProduitDTO>> getProduitsByCategorie(
+    public ResponseEntity<PageResponse<ProduitDTO>> getProduitsByCategorie(
             @PathVariable String categorie,
             @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
-        return ResponseEntity.ok(produitService.getProduitsByCategorie(categorie, pageable));
+        return ResponseEntity.ok(PageResponse.from(produitService.getProduitsByCategorie(categorie, pageable)));
     }
 
     /**
      * Search products by name (paginated).
      */
     @GetMapping("/produits/search")
-    public ResponseEntity<Page<ProduitDTO>> searchProduits(
+    public ResponseEntity<PageResponse<ProduitDTO>> searchProduits(
             @RequestParam String nom,
             @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
-        return ResponseEntity.ok(produitService.searchProduits(nom, pageable));
+        return ResponseEntity.ok(PageResponse.from(produitService.searchProduits(nom, pageable)));
     }
 
     /**
@@ -67,7 +68,7 @@ public class ProduitController {
     @GetMapping("/produits/{id}")
     public ResponseEntity<?> getProduitById(
             @PathVariable Long id,
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+            @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(produitService.getProduitById(id, userDetails.getUser()));
     }
 
@@ -78,9 +79,9 @@ public class ProduitController {
      */
     @GetMapping("/admin/produits")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<ProduitAdminDTO>> getAllProduitsForAdmin(
+    public ResponseEntity<PageResponse<ProduitAdminDTO>> getAllProduitsForAdmin(
             @PageableDefault(size = 20, sort = "nom") Pageable pageable) {
-        return ResponseEntity.ok(produitService.getAllProduitsForAdmin(pageable));
+        return ResponseEntity.ok(PageResponse.from(produitService.getAllProduitsForAdmin(pageable)));
     }
 
     /**
